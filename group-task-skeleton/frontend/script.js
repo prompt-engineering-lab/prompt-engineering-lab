@@ -154,13 +154,12 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonOutputTextarea.value = '';
         displayStatus('Searching for departures...', 'text-blue-600');
         // Wywołanie API backendu
-        const lat = startMarker ? startMarker.getLatLng().lat : null;
-        const lng = startMarker ? startMarker.getLatLng().lng : null;
-        fetch('/api/closest_departures', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lat, lng })
-        })
+        const startLat = startMarker ? startMarker.getLatLng().lat : 51.1079;
+        const startLng = startMarker ? startMarker.getLatLng().lng : 17.0385;
+        const endLat = endMarker ? endMarker.getLatLng().lat : 51.1145;
+        const endLng = endMarker ? endMarker.getLatLng().lng : 17.0294;
+        
+        fetch(`/public_transport/city/Wroclaw/closest_departures?start_coordinates=${startLat},${startLng}&end_coordinates=${endLat},${endLng}`)
         .then(res => res.json())
         .then(data => {
             jsonOutputTextarea.value = JSON.stringify(data, null, 2);
