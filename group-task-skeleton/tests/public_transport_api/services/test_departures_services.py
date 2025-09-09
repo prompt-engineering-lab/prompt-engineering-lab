@@ -5,8 +5,7 @@ from unittest.mock import patch
 class TestDeparturesService(unittest.TestCase):
 
     # TODO replace with actual tests implementation
-    @patch('public_transport_api.services.departures_service.sqlite3.connect')
-    def test_get_closest_departures_success(self, mock_connect):
+    def test_get_closest_departures_success(self):
         pass
 
 if __name__ == '__main__':
