@@ -58,6 +58,20 @@ def find_closest_stops(coordinates: str, n: int = 2) -> List[StopInfo]:
     _, indices = tree.query([lat, lon], k=n)
     return [all_stops[i] for i in indices]
 
+def _get_trip_ids(route_id: str, headsign: str) -> List[str]:
+        conn = sqlite3.connect('trips.sqlite')
+        cursor = conn.cursor()
+
+        cursor.execute("""
+                       SELECT trip_id
+                       FROM trips
+                       WHERE route_id = ?
+                         AND trip_headsign = ?
+                       """, (route_id, headsign))
+        trip_rows = cursor.fetchall()
+
+        conn.close()
+        return [row[0] for row in trip_rows]
 
 def get_closest_departures_from_db(start_coordinates: str, end_coordinates: str, start_time: str, limit: int) -> List[dict]:
     closest_start_stops = find_closest_stops(start_coordinates, 2)
@@ -74,10 +88,11 @@ def get_closest_departures_from_db(start_coordinates: str, end_coordinates: str,
                     direction = direction.split(" - ")
                     if start in direction and end in direction:
                         if direction.index(start) < direction.index(end):
-                            valid_routes.append((route[0], direction[-1]))
+                            valid_routes.append((route[0], direction[-1], start, end))
                         else:
-                            valid_routes.append((route[0], direction[0]))
-
+                            valid_routes.append((route[0], direction[0], start, end))
+    trips = [(_get_trip_ids(route[0], route[1]), route[2], route[3]) for route in valid_routes]
+    
 
     #TODO logic below
     departures = []
