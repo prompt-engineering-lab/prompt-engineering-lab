@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple API Caller</title>
+    <title>WrocTransit - Your Smart Bus & Tram Finder</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
-    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Simple API Caller</h1>
+    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">🚌 WrocTransit 🚊<br><span class="text-lg font-normal text-gray-600">Your Smart Bus & Tram Finder</span></h1>
 
     <form id="search-form" class="mb-6">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Start point:
-            <input type="text" id="start-coord" placeholder="Click on map or enter lat,lng" required
-                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2">
+        <label class="block text-gray-700 text-sm font-bold mb-2">🟢 Start point:
+            <input type="text" id="start-coord" placeholder="Focus here, then click on map for green marker" required
+                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent mb-2">
         </label>
-        <label class="block text-gray-700 text-sm font-bold mb-2">Destination:
-            <input type="text" id="end-coord" placeholder="Click on map or enter lat,lng" required
-                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2">
+        <label class="block text-gray-700 text-sm font-bold mb-2">🔴 Destination:
+            <input type="text" id="end-coord" placeholder="Focus here, then click on map for red marker" required
+                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent mb-2">
         </label>
         <label class="block text-gray-700 text-sm font-bold mb-2">Departure time:
             <input type="datetime-local" id="departure-time"
