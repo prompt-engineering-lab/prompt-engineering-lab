@@ -39,8 +39,7 @@ def _get_all_routes() -> List[tuple]:
     cursor = conn.cursor()
     
     cursor.execute("""
-                   SELECT route_id, agency_id, route_short_name, route_long_name, 
-                          route_desc, route_type, route_type2_id, valid_from, valid_until
+                   SELECT route_id, route_desc, route_type, valid_from, valid_until
                    FROM routes
                    """)
     route_rows = cursor.fetchall()
@@ -63,6 +62,22 @@ def find_closest_stops(coordinates: str, n: int = 2) -> List[StopInfo]:
 def get_closest_departures_from_db(start_coordinates: str, end_coordinates: str, start_time: str, limit: int) -> List[dict]:
     closest_start_stops = find_closest_stops(start_coordinates, 2)
     closest_end_stops = find_closest_stops(end_coordinates, 2)
+
+    routes = _get_all_routes()
+    routes = [(route[0], route[1].split(' - '), route[2], route[3], route[4]) for route in routes]
+
+    valid_routes = []
+    for start in closest_start_stops:
+        for end in closest_end_stops:
+            for route in routes:
+                for direction in route[1].split("|"):
+                    direction = direction.split(" - ")
+                    if start in direction and end in direction:
+                        if direction.index(start) < direction.index(end):
+                            valid_routes.append((route[0], direction[-1]))
+                        else:
+                            valid_routes.append((route[0], direction[0]))
+
 
     #TODO logic below
     departures = []
