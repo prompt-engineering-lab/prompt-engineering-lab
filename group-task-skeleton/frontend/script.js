@@ -2,6 +2,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const jsonOutputTextarea = document.getElementById('json-output');
     const statusMessageDiv = document.getElementById('status-message');
+    const departureTimeInput = document.getElementById('departure-time');
+
+    // Set default datetime to current time
+    function setDefaultDateTime() {
+        const now = new Date();
+        // Format to YYYY-MM-DDTHH:MM for datetime-local input
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        departureTimeInput.value = formattedDateTime;
+    }
+
+    // Set default datetime on page load
+    setDefaultDateTime();
+
+    // Improve calendar interaction - show picker on click
+    departureTimeInput.addEventListener('click', function() {
+        this.showPicker();
+    });
+
+    departureTimeInput.addEventListener('focus', function() {
+        this.showPicker();
+    });
 
     // --- MAPA ---
     var map = L.map('map').setView([51.1079, 17.0385], 13); // Wroclaw center
