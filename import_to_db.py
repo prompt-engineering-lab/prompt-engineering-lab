@@ -6,7 +6,7 @@ GTFS_FOLDER = "group-task-skeleton/OtwartyWroclaw_rozklad_jazdy_GTFS"
 DB_PATH = "trips.sqlite"
 
 def create_table_from_csv(cursor, table_name, csv_path):
-    with open(csv_path, encoding='utf-8') as f:
+    with open(csv_path, encoding='utf-8-sig') as f:
         reader = csv.reader(f)
         headers = next(reader)
         columns = ', '.join([f'"{h}" TEXT' for h in headers])
@@ -14,7 +14,7 @@ def create_table_from_csv(cursor, table_name, csv_path):
 
 
 def insert_csv_to_table(cursor, table_name, csv_path):
-    with open(csv_path, encoding='utf-8') as f:
+    with open(csv_path, encoding='utf-8-sig') as f:
         reader = csv.reader(f)
         headers = next(reader)
         placeholders = ', '.join(['?' for _ in headers])
