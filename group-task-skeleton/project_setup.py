@@ -8,7 +8,7 @@ def setup_project():
     print("Starting GTFS data import...")
     
     # Check if GTFS folder exists
-    gtfs_folder = "group-task-skeleton/OtwartyWroclaw_rozklad_jazdy_GTFS"
+    gtfs_folder = "OtwartyWroclaw_rozklad_jazdy_GTFS"
     if not os.path.exists(gtfs_folder):
         print(f"Error: GTFS folder not found at {gtfs_folder}")
         sys.exit(1)
