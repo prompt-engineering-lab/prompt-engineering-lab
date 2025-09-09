@@ -32,6 +32,7 @@ def main():
             csv_path = os.path.join(GTFS_FOLDER, filename)
             print(f'Processing {filename}...')
             create_table_from_csv(cursor, table_name, csv_path)
+            cursor.execute(f'DELETE FROM "{table_name}"')  # SQLite doesn't support TRUNCATE
             insert_csv_to_table(cursor, table_name, csv_path)
     conn.commit()
     conn.close()
