@@ -2,7 +2,7 @@ import sqlite3
 import csv
 import os
 # Path to GTFS folder and database
-GTFS_FOLDER = r"OtwartyWroclaw_rozklad_jazdy_GTFS"
+GTFS_FOLDER = "group-task-skeleton/OtwartyWroclaw_rozklad_jazdy_GTFS"
 DB_PATH = "trips.sqlite"
 
 def create_table_from_csv(cursor, table_name, csv_path):
