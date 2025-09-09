@@ -5,6 +5,7 @@ from flask_cors import CORS
 from departures import departures_bp
 from trips import trips_bp
 
+
 FRONTEND_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../frontend'))
 app = Flask(__name__, static_folder=FRONTEND_FOLDER)
 CORS(app)
