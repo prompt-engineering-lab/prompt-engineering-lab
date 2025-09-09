@@ -51,7 +51,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     map.on('click', function(e) {
-        if (nextMarkerType === 'start') {
+        // If both markers exist, replace the closest one
+        if (startMarker && endMarker) {
+            const distToStart = e.latlng.distanceTo(startMarker.getLatLng());
+            const distToEnd = e.latlng.distanceTo(endMarker.getLatLng());
+            
+            if (distToStart < distToEnd) {
+                map.removeLayer(startMarker);
+                startMarker = createMarker(e.latlng, 'start');
+                setInputFromMarker(startMarker, 'start-coord');
+            } else {
+                map.removeLayer(endMarker);
+                endMarker = createMarker(e.latlng, 'end');
+                setInputFromMarker(endMarker, 'end-coord');
+            }
+        }
+        // If only one marker exists or none, follow the nextMarkerType logic
+        else if (nextMarkerType === 'start') {
             if (startMarker) {
                 map.removeLayer(startMarker);
             }
