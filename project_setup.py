@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-from import_gtfs_to_sqlite import main as import_gtfs
+from import_to_db import main as import_gtfs
 
 def setup_project():
     """Setup project by importing GTFS data to SQLite database"""
