@@ -1,5 +1,5 @@
 # pylint: disable=missing-function-docstring,missing-module-docstring
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -14,7 +14,7 @@ def closest_departures(city):
     # Get query parameters
     start_coordinates = request.args.get('start_coordinates')
     end_coordinates = request.args.get('end_coordinates')
-    start_time = request.args.get('start_time', datetime.utcnow().isoformat() + 'Z')
+    start_time = request.args.get('start_time', datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'))
     limit = request.args.get('limit', default=5, type=int)
 
     # Validate required parameters
