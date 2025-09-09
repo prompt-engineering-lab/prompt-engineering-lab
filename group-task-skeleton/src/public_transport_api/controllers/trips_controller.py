@@ -6,7 +6,7 @@ from public_transport_api.services.trips_service import get_trip_details
 trips_bp = Blueprint('trips', __name__, url_prefix='/public_transport/city/<string:city>/trip')
 
 @trips_bp.route("/<string:trip_id>", methods=["GET"])
-def handle_trip_details(city, trip_id):
+def handle_trip_details(trip_id: str, city: str = "Wroclaw"):
     """
     Retrieves details about a specific trip, including its route, headsign, and stop details.
 
@@ -70,4 +70,4 @@ def handle_trip_details(city, trip_id):
         }
     """
     # TODO handle the city and the metadata. Add also error handling (i.e.: 404)
-    return jsonify(get_trip_details(trip_id))
+    return jsonify(get_trip_details(trip_id=trip_id, city=city))
