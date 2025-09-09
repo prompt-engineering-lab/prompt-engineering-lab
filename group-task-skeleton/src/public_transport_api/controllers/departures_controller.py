@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
+from datetime import datetime
 
 from public_transport_api.services.departures_service import get_closest_departures
 
@@ -21,5 +22,16 @@ def closest_departures(city):
         - start_time (optional, default: current time): The time at which the us-er starts the trip.
         - limit (optional, default: 5): The maximum number of departures to be returned.
     """
-    # TODO handle request parameters and add the metadata. Include error handling.
-    return jsonify(get_closest_departures())
+    if city != "Wroclaw":
+        return jsonify({"error": "Only 'wroclaw' city is supported"}), 400
+
+    start_coordinates = request.args.get('start_coordinates')
+    end_coordinates = request.args.get('end_coordinates')
+
+    if not start_coordinates or not end_coordinates:
+        return jsonify({"error": "start_coordinates and end_coordinates are required"}), 400
+
+    start_time = request.args.get('start_time', datetime.now().isoformat())
+    limit = int(request.args.get('limit', 5))
+
+    return jsonify(get_closest_departures(city, start_coordinates, end_coordinates, start_time, limit))
