@@ -126,8 +126,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('search-form').addEventListener('submit', function(e) {
         e.preventDefault();
         jsonOutputTextarea.value = '';
-        displayStatus('Searching for departures... (API integration needed)', 'text-blue-600');
-        // Tu docelowo wywołanie API
+        displayStatus('Searching for departures...', 'text-blue-600');
+        // Wywołanie API backendu
+        const lat = startMarker ? startMarker.getLatLng().lat : null;
+        const lng = startMarker ? startMarker.getLatLng().lng : null;
+        fetch('/api/closest_departures', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lat, lng })
+        })
+        .then(res => res.json())
+        .then(data => {
+            jsonOutputTextarea.value = JSON.stringify(data, null, 2);
+            displayStatus('Departures loaded!', 'text-green-600');
+        })
+        .catch(err => {
+            displayStatus('API error: ' + err, 'text-red-600');
+        });
     });
 
     function displayStatus(message, colorClass) {
