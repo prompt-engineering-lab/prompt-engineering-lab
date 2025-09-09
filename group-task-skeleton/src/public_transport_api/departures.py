@@ -1,71 +1,113 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import sqlite3
+from typing import List, Optional
+import datetime
+from scipy import spatial
+
+from models import Coordinates, Metadata
+from db_models import StopInfo
+
 departures_bp = Blueprint('departures', __name__, url_prefix='/public_transport/city/<string:city>/closest_departures')
 
+
 @departures_bp.route("/", methods=["GET"])
-def closest_departures(city):
-    """
-    The endpoint returns the closest departures of lines that bring the user closer to the destination.
-	Lines that start in the opposite direction shall not be displayed.
-	Departures are sorted by distance from start_coordinates in ascend-ing order (the closest first).
-	The endpoint does not consider which line brings the user closer to the destination.
+def closest_departures(city: str):
+    start_coordinates = request.args.get('start_coordinates')
+    end_coordinates = request.args.get('end_coordinates')
+    start_time = request.args.get('start_time')
+    limit = int(request.args.get('limit', 5))
+    
+    return jsonify(get_closest_departures(city, start_coordinates, end_coordinates, start_time, limit))
 
-    Request Parameters:
-        Path Parameters:
-        - city (required): The city for the public transport search. Currently, on-ly "wroclaw" is supported.
-        Query Parameters:
-        - start_coordinates (required): The geolocation coordinates where the user wants to start the trip.
-        - end_coordinates (required): The geolocation coordinates where the user wants to finish the trip.
-        - start_time (optional, default: current time): The time at which the us-er starts the trip.
-        - limit (optional, default: 5): The maximum number of departures to be returned.
-    """
-    # TODO handle request parameters and add the metadata. Include error handling.
-    return jsonify(get_closest_departures())
 
-def get_closest_departures():
-    """
-    FIXME this is a mock version. You need to implement the correct logic
-    """
-    conn = None
-    try:
-        conn = sqlite3.connect("trips.sqlite")
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+def _get_all_stops() -> List[StopInfo]:
+    conn = sqlite3.connect('trips.sqlite')
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+                   SELECT stop_id, stop_code, stop_name, stop_lat, stop_lon
+                   FROM stops 
+                   """)
+    stop_rows = cursor.fetchall()
+    
+    conn.close()
+    return [StopInfo(*row) for row in stop_rows]
 
-        query = "SELECT stop_id, stop_name, stop_lat, stop_lon FROM stops LIMIT 1;"
-        cursor.execute(query)
-        first_stop_row = cursor.fetchone()
 
-        mock_departures = []
+def _get_all_routes() -> List[tuple]:
+    conn = sqlite3.connect('trips.sqlite')
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+                   SELECT route_id, agency_id, route_short_name, route_long_name, 
+                          route_desc, route_type, route_type2_id, valid_from, valid_until
+                   FROM routes
+                   """)
+    route_rows = cursor.fetchall()
+    
+    conn.close()
+    return route_rows
 
-        if first_stop_row:
-            mock_departure = {
-                "trip_id": "mock_trip_001",
-                "route_id": "mock_route_A",
-                "trip_headsign": first_stop_row['stop_name'],
-                "stop": {
-                    "id": first_stop_row['stop_id'],
-                    "name": first_stop_row['stop_name'],
-                    "coordinates": {
-                        "latitude": float(first_stop_row['stop_lat']),
-                        "longitude": float(first_stop_row['stop_lon'])
-                    },
-                    "arrival_time": "10:00:00",
-                    "departure_time": "10:00:30"
-                },
-                "distance_start_to_stop": 123.45,
-                "debug_dist_stop_to_end": 543.21
-            }
-            mock_departures.append(mock_departure)
 
-        return mock_departures
+def find_closest_stops(coordinates: str, n: int = 2) -> List[StopInfo]:
+    lat, lon = map(float, coordinates.split(','))
+    all_stops = _get_all_stops()
+    
+    stop_coords = [[stop.stop_lat, stop.stop_lon] for stop in all_stops]
+    tree = spatial.KDTree(stop_coords)
+    
+    _, indices = tree.query([lat, lon], k=n)
+    return [all_stops[i] for i in indices]
 
-    except sqlite3.Error as e:
-        print(f"Database error: {e}")
-        return []
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        return []
-    finally:
-        if conn:
-            conn.close()
+
+def get_closest_departures_from_db(start_coordinates: str, end_coordinates: str, start_time: str, limit: int) -> List[dict]:
+    closest_start_stops = find_closest_stops(start_coordinates, 2)
+    closest_end_stops = find_closest_stops(end_coordinates, 2)
+
+    #TODO logic below
+    departures = []
+    for i, stop_info in enumerate(closest_start_stops):
+        coordinates: Coordinates = {
+            "latitude": stop_info.stop_lat,
+            "longitude": stop_info.stop_lon
+        }
+        
+        departure = {
+            "trip_id": f"mock_trip_{i+1:03d}",
+            "route_id": f"mock_route_{chr(65+i)}",
+            "trip_headsign": stop_info.stop_name,
+            "stop": {
+                "id": f"mock_stop_{i+1:03d}",
+                "name": stop_info.stop_name,
+                "coordinates": coordinates,
+                "arrival_time": stop_info.arrival_time,
+                "departure_time": stop_info.departure_time
+            },
+            "distance_start_to_stop": 123.45 + i * 50,
+            "debug_dist_stop_to_end": 543.21 - i * 100
+        }
+        departures.append(departure)
+    
+    return departures
+
+
+def get_closest_departures(city: str, start_coordinates: str, end_coordinates: str, 
+                          start_time: Optional[str], limit: int) -> dict:
+    metadata: Metadata = {
+        "self": f"https://example.com/city/{city}/closest_departures",
+        "city": "Wrocław",
+        "query_parameters": {
+            "city": city,
+            "start_coordinates": start_coordinates,
+            "end_coordinates": end_coordinates,
+            "start_time": start_time,
+            "limit": limit
+        }
+    }
+    start_time = start_time or datetime.datetime.now().isoformat()
+    departures = get_closest_departures_from_db(start_coordinates, end_coordinates, start_time, limit)
+    
+    return {
+        "metadata": metadata,
+        "departures": departures
+    }

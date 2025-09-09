@@ -20,16 +20,10 @@ class TripDetails(TypedDict):
     trip_headsign: str
     stops: List[Stop]
 
-
-class QueryParameters(TypedDict):
-    trip_id: str
-    city: str
-
-
 class Metadata(TypedDict):
     self: str
     city: str
-    query_parameters: QueryParameters
+    query_parameters: dict | None
 
 
 class TripResponse(TypedDict):

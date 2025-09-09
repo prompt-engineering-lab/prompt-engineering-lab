@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 import sqlite3
 from typing import List, Optional
 
-from models import TripDetails, TripResponse, Stop, Coordinates, Metadata, QueryParameters
+from models import TripDetails, TripResponse, Stop, Coordinates, Metadata
 from db_models import TripBasicInfo, StopInfo
 from exceptions import TripNotFoundError
 
@@ -144,11 +144,10 @@ def get_trip_details_from_db(trip_id: str) -> TripDetails:
 
 
 def get_trip_details(trip_id: str, city: str) -> TripResponse:
-    query_params: QueryParameters = {"trip_id": trip_id, "city": city}
     metadata: Metadata = {
         "self": f"https://example.com/city/{city}/trips/{trip_id}",
         "city": "Wrocław",
-        "query_parameters": query_params
+        "query_parameters": None,
     }
 
     try:
