@@ -11,25 +11,26 @@
 <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
     <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Simple API Caller</h1>
 
-    <div class="mb-6">
-        <label for="api-endpoint-selector" class="block text-gray-700 text-sm font-bold mb-2">Select API Endpoint:</label>
-        <select id="api-endpoint-selector"
-                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            <option value="http://localhost:5001/public_transport/city/wroclaw/closest_departures">Closest Departures (Wroclaw)</option>
-            <option value="http://localhost:5001/public_transport/city/wroclaw/trip/3_14613060">Trip Details (Trip ID: 3_14613060)</option>
-        </select>
-        <p class="text-xs text-gray-500 mt-1">
-            Choose an API endpoint to call.
-        </p>
-    </div>
-
-    <button id="call-api-btn"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105">
-        Call API
-    </button>
-
+    <form id="search-form" class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2">Start point:
+            <input type="text" id="start-coord" placeholder="Click on map or enter lat,lng" required
+                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2">
+        </label>
+        <label class="block text-gray-700 text-sm font-bold mb-2">Destination:
+            <input type="text" id="end-coord" placeholder="Click on map or enter lat,lng" required
+                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2">
+        </label>
+        <label class="block text-gray-700 text-sm font-bold mb-2">Departure time:
+            <input type="datetime-local" id="departure-time"
+                class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2">
+        </label>
+        <button type="submit"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 mt-2">
+            Find Departures
+        </button>
+    </form>
+    <div id="map" class="mb-6 rounded-lg border border-gray-300" style="height: 400px;"></div>
     <div id="status-message" class="mt-4 text-center text-sm text-gray-600"></div>
-
     <div class="mt-6">
         <label for="json-output" class="block text-gray-700 text-sm font-bold mb-2">API Response (JSON):</label>
         <textarea id="json-output"
@@ -39,6 +40,8 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
